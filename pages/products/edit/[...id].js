@@ -2,7 +2,8 @@ import Layout from "@/Components/Layout";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import ProductForm from "@/components/ProductForm";
+import ProductForm from "../ProductForm";
+// import ProductForm from "@/components/ProductForm";
 
 export default function EditProductPage() {
   const [productInfo, setProductInfo] = useState(null);
@@ -22,6 +23,6 @@ export default function EditProductPage() {
       {productInfo && (
         <ProductForm {...productInfo} />
       )}
-    </Layout>
+        </Layout>
   );
 }
