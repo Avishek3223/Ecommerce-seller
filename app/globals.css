@@ -125,3 +125,6 @@ table.basic a:hover {
   background-color: #6b7280;
   color: #ffffff;
 }
+img{
+  max-height: 100%;
+}

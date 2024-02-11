@@ -10,15 +10,20 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^2.3.2",
+    "@aws-sdk/client-s3": "^3.511.0",
     "@tailwindcss/container-queries": "^0.1.1",
     "axios": "^1.6.7",
+    "mime-type": "^4.0.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.1.1",
     "multiparty": "^4.2.3",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-sortablejs": "^6.1.4",
+    "react-spinners": "^0.13.8",
+    "sortablejs": "^1.15.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
