@@ -1,7 +1,7 @@
 import Spinner from "@/Components/Spinner";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 
 export default function ProductForm({
@@ -10,18 +10,26 @@ export default function ProductForm({
     description: existingDescription,
     price: existingPrice,
     images: existingImages,
+    category: existingCategory,
+    properties:existingProperties,
 }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [description, setDescription] = useState(existingDescription || '');
     const [price, setPrice] = useState(existingPrice || 0);
     const [images, setImages] = useState(existingImages || []);
     const [goToProducts, setGoToProducts] = useState(false)
+    const [category, setCategory] = useState(existingCategory || '');
+    const [productProperties, setProductProperties] = useState(existingProperties || '')
     const [isUploading, setIsUploading] = useState(false);
+    const [categories, setCategories] = useState('');
     const router = useRouter();
+
+    // Declare propertiesToFill outside of any conditional blocks
+    const [propertiesToFill, setPropertiesToFill] = useState([]);
 
     async function createProduct(e) {
         e.preventDefault();
-        const data = { title, description, price, images };
+        const data = { title, description, price, images, category, properties:productProperties };
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
         } else {
@@ -51,9 +59,47 @@ export default function ProductForm({
         setImages(images)
     }
 
+    useEffect(() => {
+        axios.get('/api/categories').then(result => {
+            setCategories(result.data);
+            // setProductProperties(result)
+            console.log(result)
+        }).catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+    }, []); // Ensure this effect runs only once, by providing an empty dependency array
+    
+    useEffect(() => {
+        if (categories.length > 0 && category) {
+            let catInfo = categories.find(({ _id }) => _id === category);
+            if (catInfo && Array.isArray(catInfo.properties)) {
+                let tempPropertiesToFill = catInfo.properties.slice(); // Make a copy to avoid mutating state directly
+                while (catInfo?.parent?._id) {
+                    const parentCat = categories.find(({ _id }) => _id === catInfo?.parent?._id);
+                    if (parentCat && Array.isArray(parentCat.properties)) {
+                        tempPropertiesToFill = tempPropertiesToFill.concat(parentCat.properties);
+                    }
+                    catInfo = parentCat;
+                }
+                setPropertiesToFill(tempPropertiesToFill);
+            }
+        }
+    }, [categories, category]); // Ensure this effect runs when categories or category change
+    
+    if (!categories || categories.length === 0) {
+        return <Spinner />; // Show a spinner while categories are being fetched
+    }    
+
+    function setProductProp(propName, value) {
+        setProductProperties(prev => {
+            const newProductProps = { ...prev };
+            newProductProps[propName] = value;
+            return newProductProps;
+        })
+    }
+
     return (
-        // <Layout>
-        <form onSubmit={createProduct}>
+        <form className="flex flex-col gap-1" onSubmit={createProduct}>
             <label htmlFor="productName">Product Name</label>
             <input
                 type="text"
@@ -61,9 +107,32 @@ export default function ProductForm({
                 value={title}
                 onChange={e => setTitle(e.target.value)}
             />
-            <label>
-                Photos
-            </label>
+            <label>Category</label>
+            <select
+                className="border border-gray-400 rounded-md"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+            >
+                <option value="">Uncategorize</option>
+                {categories.length > 0 && categories.map(c => (
+                    <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+            </select>
+            {categories.length > 0 && category && propertiesToFill.length > 0 && (
+                <>
+                    {propertiesToFill.map(p => (
+                        <div className="flex gap-1" key={p.name}>
+                            <div>{p.name}</div>
+                            <select value={productProperties[p.name]} onChange={(e) => setProductProp(p.name, e.target.value)}>
+                                {p.values.map(v => (
+                                    <option key={v} value={v}>{v}</option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
+                </>
+            )}
+            <label>Photos</label>
             <div className="flex mb-2.flex-wrap gap-1">
                 <ReactSortable
                     className="flex flex-wrap gap-1"
@@ -104,6 +173,5 @@ export default function ProductForm({
             />
             <button type="submit" className="btn-primary">Save</button>
         </form>
-        // </Layout>
     );
-}
+}  
