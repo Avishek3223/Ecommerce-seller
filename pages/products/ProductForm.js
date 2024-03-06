@@ -11,7 +11,7 @@ export default function ProductForm({
     price: existingPrice,
     images: existingImages,
     category: existingCategory,
-    properties:existingProperties,
+    properties: existingProperties,
 }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [description, setDescription] = useState(existingDescription || '');
@@ -29,7 +29,7 @@ export default function ProductForm({
 
     async function createProduct(e) {
         e.preventDefault();
-        const data = { title, description, price, images, category, properties:productProperties };
+        const data = { title, description, price, images, category, properties: productProperties };
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
         } else {
@@ -68,7 +68,7 @@ export default function ProductForm({
             console.error('Error fetching categories:', error);
         });
     }, []); // Ensure this effect runs only once, by providing an empty dependency array
-    
+
     useEffect(() => {
         if (categories.length > 0 && category) {
             let catInfo = categories.find(({ _id }) => _id === category);
@@ -85,10 +85,10 @@ export default function ProductForm({
             }
         }
     }, [categories, category]); // Ensure this effect runs when categories or category change
-    
+
     if (!categories || categories.length === 0) {
         return <Spinner />; // Show a spinner while categories are being fetched
-    }    
+    }
 
     function setProductProp(propName, value) {
         setProductProperties(prev => {
@@ -100,24 +100,31 @@ export default function ProductForm({
 
     return (
         <form className="flex flex-col gap-1" onSubmit={createProduct}>
-            <label htmlFor="productName">Product Name</label>
-            <input
-                type="text"
-                placeholder="Product Name"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-            />
-            <label>Category</label>
-            <select
-                className="border border-gray-400 rounded-md"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-            >
-                <option value="">Uncategorize</option>
-                {categories.length > 0 && categories.map(c => (
-                    <option key={c._id} value={c._id}>{c.name}</option>
-                ))}
-            </select>
+            <div className="flex gap-2">
+                <div className="flex flex-col">
+                    <label htmlFor="productName">Product Name</label>
+                    <input
+                        className="w-[30rem]"
+                        type="text"
+                        placeholder="Product Name"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label>Category</label>
+                    <select
+                        className="border w-[30rem] border-gray-400 rounded-md"
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                    >
+                        <option value="">Uncategorize</option>
+                        {categories.length > 0 && categories.map(c => (
+                            <option key={c._id} value={c._id}>{c.name}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
             {categories.length > 0 && category && propertiesToFill.length > 0 && (
                 <>
                     {propertiesToFill.map(p => (
@@ -150,7 +157,7 @@ export default function ProductForm({
                 )}
                 <label
                     onChange={uploadImage}
-                    className="cursor-pointer flex text-sm text-gray-500 rounded-lg font-[500] flex-col justify-center items-center w-24 h-24 bg-gray-200">
+                    className="cursor-pointer flex text-sm text-gray-500 rounded-lg font-semibold flex-col justify-center items-center w-[15rem] h-[10rem] bg-[#ffffff]" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                     </svg>
