@@ -28,19 +28,34 @@ export default function ProductForm({
     const [propertiesToFill, setPropertiesToFill] = useState([]);
 
     async function createProduct(e) {
-        e.preventDefault();
-        const data = { title, description, price, images, category, properties: productProperties };
-        if (_id) {
-            await axios.put('/api/products', { ...data, _id });
-        } else {
-            await axios.post('/api/products', data);
+        try {
+            e.preventDefault();
+            const data = {
+                title,
+                description,
+                price,
+                images,
+                category,
+                properties: productProperties
+            };
+            if (_id) {
+                //update
+                await axios.put('/api/products', { ...data, _id });
+            } else {
+                //create
+                await axios.post('/api/products', data);
+            }
+            setGoToProducts(true);
+        } catch (error) {
+            console.error('Error creating/updating product:', error);
+            // Handle error appropriately, such as displaying an error message to the user
         }
-        setGoToProducts(true)
     }
+    
     if (goToProducts) {
-        router.push('/products')
-    }
-
+        router.push('/products');
+    }    
+    
     async function uploadImage(e) {
         const files = e.target?.files;
         if (files?.length > 0) {
@@ -49,11 +64,17 @@ export default function ProductForm({
             for (const file of files) {
                 data.append('file', file)
             }
-            const res = await axios.post('/api/upload', data);
-            setImages(oldImages => [...oldImages, ...res.data.links]);
-            setIsUploading(false);
+            try {
+                const res = await axios.post('/api/upload', data);
+                setImages(oldImages => [...oldImages, ...res.data.links]);
+                setIsUploading(false);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                // Handle error appropriately
+            }
         }
     }
+    
 
     function updateImagesOrder(images) {
         setImages(images)

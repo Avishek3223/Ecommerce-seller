@@ -2,10 +2,21 @@ import multiparty from 'multiparty';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import mime from 'mime-types';
+import Cors from 'cors';
+import initMiddleware from '@/lib/init-middleware';
+
+// Initialize the cors middleware
+const cors = initMiddleware(
+  Cors({
+      methods: ['POST', 'GET'],
+      origin:'*'
+  })
+);
 
 const bucketName = 'ecommerce-with-nextjs';
 
 export default async function handle(req, res) {
+    await cors(req, res);
     const form = new multiparty.Form();
     form.parse(req, async (err, fields, files) => {
         if (err) {
