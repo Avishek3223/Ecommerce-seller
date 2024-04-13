@@ -120,7 +120,7 @@ export default function ProductForm({
     }
 
     return (
-        <form className="flex flex-col gap-1" onSubmit={createProduct}>
+        <form className="flex flex-col gap-1 max600:h-screen" onSubmit={createProduct}>
             <div className="flex gap-2">
                 <div className="flex flex-col">
                     <label htmlFor="productName">Product Name</label>

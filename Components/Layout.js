@@ -17,7 +17,7 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="min-w-screen min-h-screen bg-[#242424] ">
+    <div className="w-screen h-screen bg-[#fff]">
       <div className="p-4 md:hidden" >
         <button onClick={() => setShowNav(true)}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-8 h-8">
@@ -25,9 +25,9 @@ export default function Layout({ children }) {
           </svg>
         </button>
       </div>
-      <div className="flex">
+      <div className="flex w-screen max950:flex-col">
         <Nav show={showNav} />
-        <div className="min-h-[98vh] bg-[#f6ffff] p-4 flex-grow mt-2 mr-2 mb-2 rounded-lg">{children}</div>
+        <div className="h-[98vh] max-h-screen border border-[black] bg-[#f6ffff] p-4 flex-grow mt-2 mr-2 mb-2 rounded-lg">{children}</div>
       </div>
     </div>
   )
